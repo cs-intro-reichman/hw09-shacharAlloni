@@ -36,7 +36,18 @@ public class ListTester {
             default:
                 break;
         }
+                
         System.out.println("Test " + methodName + " result: " + (result ? "PASSED" : "FAILED"));
+        
+       /** 
+        List list = new List();
+        list.addFirst('a');
+        list.addFirst('b');
+        list.addFirst('c');
+
+        System.out.println(list);
+        */
+
     }
 
     public static boolean testAddFirst() {
