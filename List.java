@@ -74,7 +74,7 @@ public class List {
         int index = this.indexOf(chr);
 
         if (index == -1) {
-            addLast(chr);
+            addFirst(chr);
         }
         else {
             CharData temp = this.get(index);
