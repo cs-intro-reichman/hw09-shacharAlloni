@@ -153,7 +153,7 @@ public class List {
         // Returns an iterator that starts in that element
 	    return new ListIterator(current);
     }
-
+    /** 
     private void addLast(char chr) {
         Node newNode = new Node(new CharData(chr), null);
         if (first == null) {
@@ -167,4 +167,5 @@ public class List {
         }
         size++;
     }
+    */
 }

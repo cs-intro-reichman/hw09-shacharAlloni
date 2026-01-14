@@ -33,19 +33,73 @@ public class LanguageModel {
 
     /** Builds a language model from the text in the given file (the corpus). */
 	public void train(String fileName) {
-		// Your code goes here
+		String window = "";
+        char c;
+
+        In in = new In(fileName);
+
+        window = window + in.readChar() + in.readChar();
+
+        while (!in.isEmpty()) {
+            c = in.readChar();
+
+            List probs = CharDataMap.get(window);
+
+            if (probs == null) {
+                probs = new List();
+                CharDataMap.put(window, probs);
+            }
+
+            probs.update(c);
+            window = window + c;
+            window = window.substring(1);
+        }
+
+        for (List probs : CharDataMap.values())
+            calculateProbabilities(probs);
 	}
 
     // Computes and sets the probabilities (p and cp fields) of all the
 	// characters in the given list. */
 	void calculateProbabilities(List probs) {				
-		// Your code goes here
+		ListIterator itr = probs.listIterator(0);
+        int total = 0;
+
+        while (itr != null && itr.hasNext()) {
+            CharData curr = itr.next();
+            total = total + curr.count;
+        }
+
+        itr = probs.listIterator(0);
+        Node prev = itr.current;
+
+        if (itr.hasNext() && itr != null) {
+            CharData curr = itr.next();
+            curr.p = curr.count / (double) total;
+            curr.cp = prev.cp.cp + curr.p;
+        }
+        
+        while (itr.hasNext() && itr != null) {
+            CharData curr = itr.next();
+            curr.p = curr.count / (double) total;
+            curr.cp = prev.cp.cp + curr.p;
+            prev = prev.next;
+        }
 	}
 
     // Returns a random character from the given probabilities list.
 	char getRandomChar(List probs) {
-		// Your code goes here
-		return ' ';
+        ListIterator itr = probs.listIterator(0);
+        double rnd = randomGenerator.nextDouble(1.0);
+
+        while (itr.hasNext()) {
+            CharData curr = itr.next();
+            if (curr.cp > rnd) {
+                return curr.chr;
+            }
+        }
+
+		return probs.get(probs.getSize() - 1).chr;
 	}
 
     /**
@@ -71,6 +125,11 @@ public class LanguageModel {
 	}
 
     public static void main(String[] args) {
-		// Your code goes here
+        LanguageModel model = new LanguageModel(1);
+
+        model.train("galileo.txt");
+        System.out.println(model);
+
+
     }
 }
