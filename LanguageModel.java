@@ -135,7 +135,7 @@ public class LanguageModel {
             generatedText = generatedText + nextChar;
             currentWindow = generatedText.substring(generatedText.length() - windowLength);  
         }
-        System.out.println(generatedText.replace("\r", "[R]").replace("\n", "[N]"));
+        
         return generatedText;
 	}
 
