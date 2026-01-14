@@ -32,19 +32,26 @@ public class LanguageModel {
     }
 
     /** Builds a language model from the text in the given file (the corpus). */
-	public void train(String fileName) {
-		String window = "";
-        char c;
-
+    public void train(String fileName) {
+        String window = "";
         In in = new In(fileName);
+        
+       
+        while (window.length() < windowLength && !in.isEmpty()) {
+            char c = in.readChar();
+            if (c != '\r') {
+                window += c;
+            }
+        }
 
-        window = window + in.readChar() + in.readChar();
-
+       
         while (!in.isEmpty()) {
-            c = in.readChar();
+            char c = in.readChar();
+            if (c == '\r') {
+                continue; 
+            }
 
             List probs = CharDataMap.get(window);
-
             if (probs == null) {
                 probs = new List();
                 CharDataMap.put(window, probs);
@@ -57,7 +64,7 @@ public class LanguageModel {
 
         for (List probs : CharDataMap.values())
             calculateProbabilities(probs);
-	}
+    }
 
     // Computes and sets the probabilities (p and cp fields) of all the
 	// characters in the given list. */
@@ -65,32 +72,33 @@ public class LanguageModel {
 		ListIterator itr = probs.listIterator(0);
         int total = 0;
 
-        while (itr != null && itr.hasNext()) {
+        while (itr.hasNext()) {
             CharData curr = itr.next();
             total = total + curr.count;
         }
 
         itr = probs.listIterator(0);
-        Node prev = itr.current;
+        double temp = 0.0;
 
-        if (itr.hasNext() && itr != null) {
-            CharData curr = itr.next();
-            curr.p = curr.count / (double) total;
-            curr.cp = prev.cp.cp + curr.p;
-        }
         
-        while (itr.hasNext() && itr != null) {
+        while (itr.hasNext()) {
             CharData curr = itr.next();
-            curr.p = curr.count / (double) total;
-            curr.cp = prev.cp.cp + curr.p;
-            prev = prev.next;
+            curr.p = (double) curr.count / total;
+            temp = temp + curr.p;            
+            if (!itr.hasNext()) {
+                curr.cp = 1.0;
+            }
+            else {
+                curr.cp = temp;
+            }
         }
 	}
 
     // Returns a random character from the given probabilities list.
 	char getRandomChar(List probs) {
         ListIterator itr = probs.listIterator(0);
-        double rnd = randomGenerator.nextDouble(1.0);
+
+        double rnd = randomGenerator.nextDouble();
 
         while (itr.hasNext()) {
             CharData curr = itr.next();
@@ -110,8 +118,25 @@ public class LanguageModel {
 	 * @return the generated text
 	 */
 	public String generate(String initialText, int textLength) {
-		// Your code goes here
-        return "";
+		if (initialText.length() < windowLength) {
+            return initialText;
+        }
+
+        String generatedText = initialText;
+        String currentWindow = generatedText.substring(generatedText.length() - windowLength);
+
+        while (generatedText.length() < textLength) {
+            List tempList = CharDataMap.get(currentWindow);
+
+            if (tempList == null) {
+                break; 
+            }
+            char nextChar = getRandomChar(tempList);
+            generatedText = generatedText + nextChar;
+            currentWindow = generatedText.substring(generatedText.length() - windowLength);  
+        }
+        System.out.println(generatedText.replace("\r", "[R]").replace("\n", "[N]"));
+        return generatedText;
 	}
 
     /** Returns a string representing the map of this language model. */
@@ -125,10 +150,15 @@ public class LanguageModel {
 	}
 
     public static void main(String[] args) {
-        LanguageModel model = new LanguageModel(1);
+        LanguageModel model = new LanguageModel(2);
 
         model.train("galileo.txt");
-        System.out.println(model);
+        model.train("shakespeareinlove.txt");
+        model.train("originofspecies.txt");
+
+        String res = model.generate("hi", 100);
+        System.out.println(res);
+
 
 
     }
