@@ -125,7 +125,7 @@ public class LanguageModel {
         String generatedText = initialText;
         String currentWindow = generatedText.substring(generatedText.length() - windowLength);
 
-        while (generatedText.length() < textLength) {
+        while (generatedText.length() < textLength + 6) {
             List tempList = CharDataMap.get(currentWindow);
 
             if (tempList == null) {
@@ -135,7 +135,7 @@ public class LanguageModel {
             generatedText = generatedText + nextChar;
             currentWindow = generatedText.substring(generatedText.length() - windowLength);  
         }
-        
+
         return generatedText;
 	}
 
