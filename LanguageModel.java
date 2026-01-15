@@ -39,17 +39,12 @@ public class LanguageModel {
        
         while (window.length() < windowLength && !in.isEmpty()) {
             char c = in.readChar();
-            if (c != '\r') {
-                window += c;
-            }
+            window += c;
         }
 
        
         while (!in.isEmpty()) {
             char c = in.readChar();
-            if (c == '\r') {
-                continue; 
-            }
 
             List probs = CharDataMap.get(window);
             if (probs == null) {
@@ -150,13 +145,11 @@ public class LanguageModel {
 	}
 
     public static void main(String[] args) {
-        LanguageModel model = new LanguageModel(2);
+        LanguageModel model = new LanguageModel(7);
 
-        model.train("galileo.txt");
-        model.train("shakespeareinlove.txt");
         model.train("originofspecies.txt");
 
-        String res = model.generate("hi", 100);
+        String res = model.generate("Natural", 200);
         System.out.println(res);
 
 
