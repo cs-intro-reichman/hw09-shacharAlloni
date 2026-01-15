@@ -36,6 +36,7 @@ public class ListTester {
             default:
                 break;
         }
+                
         System.out.println("Test " + methodName + " result: " + (result ? "PASSED" : "FAILED"));
     }
 

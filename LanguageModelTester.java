@@ -47,6 +47,7 @@ public class LanguageModelTester {
             System.out.println("Expected: " + resString);
             System.out.println("Actual: " + list.toString());
         }
+        //System.out.println(list);
         return res;
     }
 
@@ -68,6 +69,7 @@ public class LanguageModelTester {
             }
             boolean res = true;
             model.calculateProbabilities(list);
+            //System.out.println(list);
             for (int j = 0; j < words[i].length(); j++) {
                 char actual = model.getRandomChar(list);
                 boolean temp = actual == expected[i][j];
